@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter_imclient/flutter_imclient.dart';
 import 'package:flutter_imclient/message/message.dart';
@@ -19,22 +21,22 @@ const recallNotificationContentMeta = MessageContentMeta(
     RecallNotificationContentCreator);
 
 class RecallNotificationContent extends NotificationMessageContent {
-  int messageUid;
-  String operatorId;
-  String originalSender;
-  int originalContentType;
-  String originalSearchableContent;
-  String originalContent;
-  String originalExtra;
-  int originalMessageTimestamp;
+  int? messageUid;
+  String? operatorId;
+  String? originalSender;
+  int? originalContentType;
+  String? originalSearchableContent;
+  String? originalContent;
+  String? originalExtra;
+  int? originalMessageTimestamp;
 
   @override
   Future<void> decode(MessagePayload payload) async {
     super.decode(payload);
     operatorId = payload.content;
-    messageUid = int.parse(utf8.decode(payload.binaryContent));
+    messageUid = int.parse(utf8.decode(payload.binaryContent!));
     if (extra != null) {
-      var map = json.decode(extra);
+      var map = json.decode(extra!);
       originalSender = map['s'];
       originalContentType = map['t'];
       originalSearchableContent = map['sc'];
@@ -54,28 +56,28 @@ class RecallNotificationContent extends NotificationMessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await super.encode();
+    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
     payload.content = operatorId;
-    payload.binaryContent = utf8.encode(messageUid.toString());
+    payload.binaryContent = utf8.encode(messageUid.toString()) as Uint8List?;
     return payload;
   }
 
   @override
   Future<String> digest(Message message) async {
-    UserInfo userInfo;
+    UserInfo? userInfo;
     if (message.conversation != null &&
-        message.conversation.conversationType == ConversationType.Group) {
+        message.conversation!.conversationType == ConversationType.Group) {
       userInfo = await FlutterImclient.getUserInfo(operatorId,
-          groupId: message.conversation.target);
+          groupId: message.conversation!.target);
     } else {
       userInfo = await FlutterImclient.getUserInfo(operatorId);
     }
-    String name;
+    String? name;
     if (userInfo != null) {
-      if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
+      if (userInfo.friendAlias != null && userInfo.friendAlias!.isNotEmpty) {
         name = userInfo.friendAlias;
       } else if (userInfo.groupAlias != null &&
-          userInfo.groupAlias.isNotEmpty) {
+          userInfo.groupAlias!.isNotEmpty) {
         name = userInfo.groupAlias;
       } else {
         name = userInfo.displayName;

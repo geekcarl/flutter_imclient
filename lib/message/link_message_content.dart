@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter_imclient/message/media_message_content.dart';
 import 'package:flutter_imclient/message/message.dart';
@@ -14,10 +15,10 @@ const linkContentMeta = MessageContentMeta(MESSAGE_CONTENT_TYPE_LINK,
     MessageFlag.PERSIST_AND_COUNT, LinkMessageContentCreator);
 
 class LinkMessageContent extends MediaMessageContent {
-  String title;
-  String contentDigest;
-  String url;
-  String thumbnailUrl;
+  String? title;
+  String? contentDigest;
+  String? url;
+  String? thumbnailUrl;
 
   @override
   MessageContentMeta get meta => linkContentMeta;
@@ -26,7 +27,7 @@ class LinkMessageContent extends MediaMessageContent {
   void decode(MessagePayload payload) {
     super.decode(payload);
     title = payload.searchableContent;
-    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent));
+    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent!));
     contentDigest = map['d'];
     url = map['u'];
     thumbnailUrl = map['t'];
@@ -41,13 +42,13 @@ class LinkMessageContent extends MediaMessageContent {
       'd': contentDigest,
       'u': url,
       't': thumbnailUrl,
-    }));
+    })) as Uint8List?;
     return payload;
   }
 
   @override
   Future<String> digest(Message message) async {
-    if (title != null && title.isNotEmpty) {
+    if (title != null && title!.isNotEmpty) {
       return '[链接]:$title';
     }
     return '[链接]';

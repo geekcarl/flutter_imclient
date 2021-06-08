@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter_imclient/message/message_content.dart';
 import 'package:flutter_imclient/model/message_payload.dart';
 
 class MediaMessageContent extends MessageContent {
-  String localPath;
-  String remoteUrl;
+  String? localPath;
+  String? remoteUrl;
 
   @override
   void decode(MessagePayload payload) {
@@ -14,7 +16,7 @@ class MediaMessageContent extends MessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await super.encode();
+    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
     payload.localMediaPath = localPath;
     payload.remoteMediaUrl = remoteUrl;
     payload.mediaType = mediaType;

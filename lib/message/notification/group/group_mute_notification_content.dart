@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -19,15 +20,17 @@ const groupMuteNotificationContentMeta = MessageContentMeta(
     GroupMuteNotificationContentCreator);
 
 class GroupMuteNotificationContent extends NotificationMessageContent {
-  String groupId;
-  String creator;
+  String? groupId;
+  String? creator;
+
   //0 设置群禁言，1 取消群禁言。
-  String type;
+  String? type;
 
   @override
   void decode(MessagePayload payload) {
     super.decode(payload);
-    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent));
+    Map<dynamic, dynamic> map =
+        json.decode(utf8.decode(payload.binaryContent!));
     creator = map['o'];
     groupId = map['g'];
     type = map['n'];
@@ -40,7 +43,7 @@ class GroupMuteNotificationContent extends NotificationMessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await super.encode();
+    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
     Map<String, dynamic> map = new Map();
     map['o'] = creator;
     map['g'] = groupId;
@@ -61,15 +64,15 @@ class GroupMuteNotificationContent extends NotificationMessageContent {
     if (creator == await FlutterImclient.currentUserId) {
       return '你 $str';
     } else {
-      UserInfo userInfo =
+      UserInfo? userInfo =
           await FlutterImclient.getUserInfo(creator, groupId: groupId);
       if (userInfo != null) {
-        if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
+        if (userInfo.friendAlias != null && userInfo.friendAlias!.isNotEmpty) {
           return '${userInfo.friendAlias} $str';
         } else if (userInfo.groupAlias != null) {
           return '${userInfo.groupAlias} $str';
         } else if (userInfo.displayName != null &&
-            userInfo.displayName.isNotEmpty) {
+            userInfo.displayName!.isNotEmpty) {
           return '${userInfo.displayName} $str';
         } else {
           return '$creator $str';

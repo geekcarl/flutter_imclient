@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -19,14 +20,15 @@ const addGroupMemberNotificationContentMeta = MessageContentMeta(
     AddGroupMemberNotificationContentCreator);
 
 class AddGroupMemberNotificationContent extends NotificationMessageContent {
-  String groupId;
-  String invitor;
-  List<String> invitees;
+  String? groupId;
+  String? invitor;
+  List<String>? invitees;
 
   @override
   void decode(MessagePayload payload) {
     super.decode(payload);
-    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent));
+    Map<dynamic, dynamic> map =
+        json.decode(utf8.decode(payload.binaryContent!));
     invitor = map['o'];
     groupId = map['g'];
     invitees = FlutterImclient.convertDynamicList(map['ms']);
@@ -39,7 +41,7 @@ class AddGroupMemberNotificationContent extends NotificationMessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await super.encode();
+    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
     Map<String, dynamic> map = new Map();
     map['o'] = invitor;
     map['g'] = groupId;
@@ -50,20 +52,21 @@ class AddGroupMemberNotificationContent extends NotificationMessageContent {
 
   @override
   Future<String> formatNotification(Message message) async {
-    if (invitees.length == 1 && invitees[0] == invitor) {
+    if (invitees!.length == 1 && invitees![0] == invitor) {
       if (invitor == await FlutterImclient.currentUserId) {
         return '你加入了群聊';
       } else {
-        UserInfo userInfo =
+        UserInfo? userInfo =
             await FlutterImclient.getUserInfo(invitor, groupId: groupId);
         if (userInfo != null) {
-          if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
+          if (userInfo.friendAlias != null &&
+              userInfo.friendAlias!.isNotEmpty) {
             return '${userInfo.friendAlias} 加入了群聊';
           } else if (userInfo.groupAlias != null &&
-              userInfo.groupAlias.isNotEmpty) {
+              userInfo.groupAlias!.isNotEmpty) {
             return '${userInfo.groupAlias} 加入了群聊';
           } else if (userInfo.displayName != null &&
-              userInfo.displayName.isNotEmpty) {
+              userInfo.displayName!.isNotEmpty) {
             return '${userInfo.displayName} 加入了群聊';
           } else {
             return '$invitor 加入了群聊';
@@ -77,16 +80,16 @@ class AddGroupMemberNotificationContent extends NotificationMessageContent {
     if (invitor == await FlutterImclient.currentUserId) {
       formatMsg = '你 邀请';
     } else {
-      UserInfo userInfo =
+      UserInfo? userInfo =
           await FlutterImclient.getUserInfo(invitor, groupId: groupId);
       if (userInfo != null) {
-        if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
+        if (userInfo.friendAlias != null && userInfo.friendAlias!.isNotEmpty) {
           formatMsg = '${userInfo.friendAlias} 邀请';
         } else if (userInfo.groupAlias != null &&
-            userInfo.groupAlias.isNotEmpty) {
+            userInfo.groupAlias!.isNotEmpty) {
           formatMsg = '${userInfo.groupAlias} 邀请';
         } else if (userInfo.displayName != null &&
-            userInfo.displayName.isNotEmpty) {
+            userInfo.displayName!.isNotEmpty) {
           formatMsg = '${userInfo.displayName} 邀请';
         } else {
           formatMsg = '$invitor 邀请';
@@ -96,21 +99,22 @@ class AddGroupMemberNotificationContent extends NotificationMessageContent {
       }
     }
 
-    for (int i = 0; i < invitees.length; ++i) {
-      String memberId = invitees[i];
+    for (int i = 0; i < invitees!.length; ++i) {
+      String memberId = invitees![i];
       if (memberId == await FlutterImclient.currentUserId) {
         formatMsg = '$formatMsg 你';
       } else {
-        UserInfo userInfo =
+        UserInfo? userInfo =
             await FlutterImclient.getUserInfo(memberId, groupId: groupId);
         if (userInfo != null) {
-          if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
+          if (userInfo.friendAlias != null &&
+              userInfo.friendAlias!.isNotEmpty) {
             formatMsg = '$formatMsg ${userInfo.friendAlias}';
           } else if (userInfo.groupAlias != null &&
-              userInfo.groupAlias.isNotEmpty) {
+              userInfo.groupAlias!.isNotEmpty) {
             formatMsg = '$formatMsg ${userInfo.groupAlias}';
           } else if (userInfo.displayName != null &&
-              userInfo.displayName.isNotEmpty) {
+              userInfo.displayName!.isNotEmpty) {
             formatMsg = '$formatMsg ${userInfo.displayName}';
           } else {
             formatMsg = '$formatMsg $invitor';

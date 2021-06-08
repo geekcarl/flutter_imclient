@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter_imclient/flutter_imclient.dart';
 import 'package:flutter_imclient/message/message.dart';
@@ -18,16 +20,17 @@ const groupPrivateChatNotificationContentMeta = MessageContentMeta(
     GroupPrivateChatNotificationContentCreator);
 
 class GroupPrivateChatNotificationContent extends NotificationMessageContent {
-  String groupId;
-  String invitor;
+  String? groupId;
+  String? invitor;
 
   ///0 允许私聊，1 不允许私聊。
-  String type;
+  String? type;
 
   @override
   void decode(MessagePayload payload) {
     super.decode(payload);
-    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent));
+    Map<dynamic, dynamic> map =
+        json.decode(utf8.decode(payload.binaryContent!));
     invitor = map['o'];
     groupId = map['g'];
     type = map['n'];
@@ -40,12 +43,12 @@ class GroupPrivateChatNotificationContent extends NotificationMessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await super.encode();
+    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
     Map<String, dynamic> map = new Map();
     map['o'] = invitor;
     map['g'] = groupId;
     map['n'] = type;
-    payload.binaryContent = utf8.encode(json.encode(map));
+    payload.binaryContent = utf8.encode(json.encode(map)) as Uint8List?;
     return payload;
   }
 
@@ -61,16 +64,16 @@ class GroupPrivateChatNotificationContent extends NotificationMessageContent {
     if (invitor == await FlutterImclient.currentUserId) {
       return '你 $str';
     } else {
-      UserInfo userInfo =
+      UserInfo? userInfo =
           await FlutterImclient.getUserInfo(invitor, groupId: groupId);
       if (userInfo != null) {
-        if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
+        if (userInfo.friendAlias != null && userInfo.friendAlias!.isNotEmpty) {
           return '${userInfo.friendAlias} $str';
         } else if (userInfo.groupAlias != null &&
-            userInfo.groupAlias.isNotEmpty) {
+            userInfo.groupAlias!.isNotEmpty) {
           return '${userInfo.groupAlias} $str';
         } else if (userInfo.displayName != null &&
-            userInfo.displayName.isNotEmpty) {
+            userInfo.displayName!.isNotEmpty) {
           return '${userInfo.displayName} $str';
         } else {
           return '$invitor $str';

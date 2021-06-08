@@ -12,13 +12,13 @@ class FriendRequest {
   //放向
   FriendRequestDirection direction;
   //ID
-  String target;
+  String? target;
   //请求说明
-  String reason;
+  String? reason;
   //接受状态
   FriendRequestStatus status;
   //已读
   FriendRequestReadStatus readStatus;
   //发起时间
-  int timestamp;
+  int? timestamp;
 }

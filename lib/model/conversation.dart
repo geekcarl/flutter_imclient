@@ -6,8 +6,8 @@ class Conversation {
       this.target = '',
       this.line = 0});
   ConversationType conversationType;
-  String target;
-  int line;
+  String? target;
+  int? line;
 
   @override
   String toString() {

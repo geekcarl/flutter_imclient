@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter_imclient/flutter_imclient.dart';
 import 'package:flutter_imclient/message/media_message_content.dart';
@@ -18,8 +20,8 @@ const compositeContentMeta = MessageContentMeta(
     CompositeMessageContentCreator);
 
 class CompositeMessageContent extends MediaMessageContent {
-  String title;
-  List<Message> messages;
+  String? title;
+  late List<Message> messages;
 
   @override
   MessageContentMeta get meta => compositeContentMeta;
@@ -28,17 +30,17 @@ class CompositeMessageContent extends MediaMessageContent {
   void decode(MessagePayload payload) {
     super.decode(payload);
     title = payload.content;
-    messages = new List();
-    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent));
+    messages = [];
+    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent!));
     List<dynamic> ms = map['ms'];
     for (int i = 0; i < ms.length; ++i) {
       Map map = ms[i];
       Message msg = new Message();
       msg.messageUid = map['uid'];
       msg.conversation = new Conversation();
-      msg.conversation.conversationType = ConversationType.values[map['type']];
-      msg.conversation.target = map['target'];
-      msg.conversation.line = map['line'];
+      msg.conversation!.conversationType = ConversationType.values[map['type']];
+      msg.conversation!.target = map['target'];
+      msg.conversation!.line = map['line'];
 
       msg.fromUser = map['from'];
       msg.toUsers = map['tos'];
@@ -73,36 +75,36 @@ class CompositeMessageContent extends MediaMessageContent {
     MessagePayload payload = await super.encode();
 
     payload.content = title;
-    List<Map> ms = new List();
+    List<Map> ms = [];
     for (int i = 0; i < messages.length; ++i) {
       Message msg = messages.elementAt(i);
       Map map = Map();
-      if (msg.messageUid > 0) {
+      if (msg.messageUid! > 0) {
         map['uid'] = msg.messageUid;
       }
-      map['type'] = msg.conversation.conversationType.index;
-      map['target'] = msg.conversation.target;
-      map['line'] = msg.conversation.line;
+      map['type'] = msg.conversation!.conversationType.index;
+      map['target'] = msg.conversation!.target;
+      map['line'] = msg.conversation!.line;
       map['from'] = msg.fromUser;
-      if (msg.toUsers != null && msg.toUsers.isNotEmpty) {
+      if (msg.toUsers != null && msg.toUsers!.isNotEmpty) {
         map['tos'] = msg.toUsers;
       }
-      map['direction'] = msg.direction.index;
-      map['status'] = msg.status.index;
+      map['direction'] = msg.direction!.index;
+      map['status'] = msg.status!.index;
       map['serverTime'] = msg.serverTime;
 
-      MessagePayload payload = await msg.content.encode();
+      MessagePayload payload = await (msg.content!.encode() as FutureOr<MessagePayload>);
       map['ctype'] = payload.contentType;
       map['csc'] = payload.searchableContent;
       map['cpc'] = payload.pushContent;
       map['cpd'] = payload.pushData;
       map['cc'] = payload.content;
       if (payload.binaryContent != null) {
-        map['cbc'] = Base64Encoder().convert(payload.binaryContent);
+        map['cbc'] = Base64Encoder().convert(payload.binaryContent!);
       }
       map['cmt'] = payload.mentionedType;
       if (payload.mentionedTargets != null &&
-          payload.mentionedTargets.isNotEmpty) {
+          payload.mentionedTargets!.isNotEmpty) {
         map['cmts'] = payload.mentionedTargets;
       }
       map['ce'] = payload.extra;
@@ -113,13 +115,13 @@ class CompositeMessageContent extends MediaMessageContent {
       ms.add(map);
     }
 
-    payload.binaryContent = utf8.encode(json.encode({'ms': ms}));
+    payload.binaryContent = utf8.encode(json.encode({'ms': ms})) as Uint8List?;
     return payload;
   }
 
   @override
   Future<String> digest(Message message) async {
-    if (title != null && title.isNotEmpty) {
+    if (title != null && title!.isNotEmpty) {
       return '[聊天]:$title';
     }
     return '[聊天]';

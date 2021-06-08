@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_imclient/message/message.dart';
 import 'package:flutter_imclient/message/message_content.dart';
 import 'package:flutter_imclient/message/notification/notification_message_content.dart';
@@ -12,7 +14,7 @@ const tipNotificationContentMeta = MessageContentMeta(MESSAGE_CONTENT_TYPE_TIP,
     MessageFlag.PERSIST, TipNotificationContentCreator);
 
 class TipNotificationContent extends NotificationMessageContent {
-  String tip;
+  String? tip;
 
   @override
   Future<void> decode(MessagePayload payload) async {
@@ -24,19 +26,19 @@ class TipNotificationContent extends NotificationMessageContent {
   MessageContentMeta get meta => tipNotificationContentMeta;
 
   @override
-  Future<String> formatNotification(Message message) async {
+  Future<String?> formatNotification(Message message) async {
     return tip;
   }
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await super.encode();
+    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
     payload.content = tip;
     return payload;
   }
 
   @override
-  Future<String> digest(Message message) async {
+  Future<String?> digest(Message message) async {
     return tip;
   }
 }

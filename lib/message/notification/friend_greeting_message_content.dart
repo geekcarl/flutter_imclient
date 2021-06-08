@@ -18,11 +18,10 @@ class FriendGreetingMessageContent extends NotificationMessageContent {
   }
 
   @override
-  Future<MessagePayload> encode() async {
-    MessagePayload payload = await super.encode();
+  Future<MessagePayload?> encode() async {
+    MessagePayload? payload = await super.encode();
     return payload;
   }
-
 
   @override
   Future<String> formatNotification(Message message) async {
@@ -36,5 +35,4 @@ class FriendGreetingMessageContent extends NotificationMessageContent {
 
   @override
   MessageContentMeta get meta => friendGreetingContentMeta;
-
 }

@@ -8,8 +8,10 @@ MessageContent FriendAddedMessageContentCreator() {
   return new FriendAddedMessageContent();
 }
 
-const friendAddedContentMeta = MessageContentMeta(MESSAGE_FRIEND_ADDED_NOTIFICATION,
-    MessageFlag.PERSIST, FriendAddedMessageContentCreator);
+const friendAddedContentMeta = MessageContentMeta(
+    MESSAGE_FRIEND_ADDED_NOTIFICATION,
+    MessageFlag.PERSIST,
+    FriendAddedMessageContentCreator);
 
 class FriendAddedMessageContent extends NotificationMessageContent {
   @override
@@ -18,11 +20,10 @@ class FriendAddedMessageContent extends NotificationMessageContent {
   }
 
   @override
-  Future<MessagePayload> encode() async {
-    MessagePayload payload = await super.encode();
+  Future<MessagePayload?> encode() async {
+    MessagePayload? payload = await super.encode();
     return payload;
   }
-
 
   @override
   Future<String> formatNotification(Message message) async {
@@ -36,5 +37,4 @@ class FriendAddedMessageContent extends NotificationMessageContent {
 
   @override
   MessageContentMeta get meta => friendAddedContentMeta;
-
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -19,13 +20,14 @@ const dismissGroupNotificationContentMeta = MessageContentMeta(
     DismissGroupNotificationContentCreator);
 
 class DismissGroupNotificationContent extends NotificationMessageContent {
-  String groupId;
-  String operateUser;
+  String? groupId;
+  String? operateUser;
 
   @override
   void decode(MessagePayload payload) {
     super.decode(payload);
-    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent));
+    Map<dynamic, dynamic> map =
+        json.decode(utf8.decode(payload.binaryContent!));
     operateUser = map['o'];
     groupId = map['g'];
   }
@@ -37,7 +39,7 @@ class DismissGroupNotificationContent extends NotificationMessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await super.encode();
+    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
     Map<String, dynamic> map = new Map();
     map['o'] = operateUser;
     map['g'] = groupId;
@@ -50,16 +52,16 @@ class DismissGroupNotificationContent extends NotificationMessageContent {
     if (operateUser == await FlutterImclient.currentUserId) {
       return '你 销毁了群组';
     } else {
-      UserInfo userInfo =
+      UserInfo? userInfo =
           await FlutterImclient.getUserInfo(operateUser, groupId: groupId);
       if (userInfo != null) {
-        if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
+        if (userInfo.friendAlias != null && userInfo.friendAlias!.isNotEmpty) {
           return '${userInfo.friendAlias} 销毁了群组';
         } else if (userInfo.groupAlias != null &&
-            userInfo.groupAlias.isNotEmpty) {
+            userInfo.groupAlias!.isNotEmpty) {
           return '${userInfo.groupAlias} 销毁了群组';
         } else if (userInfo.displayName != null &&
-            userInfo.displayName.isNotEmpty) {
+            userInfo.displayName!.isNotEmpty) {
           return '${userInfo.displayName} 销毁了群组';
         } else {
           return '$operateUser 销毁了群组';

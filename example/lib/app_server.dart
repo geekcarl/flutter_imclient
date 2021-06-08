@@ -5,8 +5,8 @@ import 'package:flutter_imclient/flutter_imclient.dart';
 import 'package:flutter_imclient_example/config.dart';
 import 'package:http/http.dart' as http;
 
-typedef AppServerErrorCallback = Function(String msg);
-typedef AppServerLoginSuccessCallback = Function(String userId, String token, bool isNewUser);
+typedef AppServerErrorCallback = Function(String? msg);
+typedef AppServerLoginSuccessCallback = Function(String? userId, String? token, bool? isNewUser);
 
 typedef _appServerHTTPCallback = Function(String response);
 class AppServer {
@@ -30,9 +30,9 @@ class AppServer {
       Map<dynamic, dynamic> map = json.decode(response);
       if(map['code'] == 0) {
         Map<dynamic, dynamic> result = map['result'];
-        String userId = result['userId'];
-        String token = result['token'];
-        bool newUser = result['register'];
+        String? userId = result['userId'];
+        String? token = result['token'];
+        bool? newUser = result['register'];
         successCallback(userId, token, newUser);
       } else {
         errorCallback(map['message'] != null ? map['message'] : '网络错误');
@@ -45,7 +45,7 @@ class AppServer {
 
     // print(json);
     http.Response response = await http.post(
-        url, // post地址
+        Uri.parse(url), // post地址
         headers: {"content-type": "application/json"}, //设置content-type为json
         body: json //json参数
     );

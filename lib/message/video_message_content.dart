@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter_imclient/message/media_message_content.dart';
 import 'package:flutter_imclient/message/message.dart';
@@ -15,8 +16,8 @@ const videoContentMeta = MessageContentMeta(MESSAGE_CONTENT_TYPE_VIDEO,
     MessageFlag.PERSIST_AND_COUNT, VideoMessageContentCreator);
 
 class VideoMessageContent extends MediaMessageContent {
-  Image thumbnail;
-  int duration;
+  late Image thumbnail;
+  int? duration;
 
   @override
   MessageContentMeta get meta => videoContentMeta;
@@ -24,11 +25,11 @@ class VideoMessageContent extends MediaMessageContent {
   @override
   void decode(MessagePayload payload) {
     super.decode(payload);
-    if (payload?.binaryContent != null) {
-      thumbnail = decodeJpg(payload.binaryContent);
+    if (payload.binaryContent != null) {
+      thumbnail = decodeJpg(payload.binaryContent!);
     }
-    if (payload?.content != null) {
-      var map = json.decode(payload.content);
+    if (payload.content != null) {
+      var map = json.decode(payload.content!);
       duration = map['duration'];
       if (duration == null) {
         duration = map['d'];
@@ -40,7 +41,7 @@ class VideoMessageContent extends MediaMessageContent {
   Future<MessagePayload> encode() async {
     MessagePayload payload = await super.encode();
     payload.searchableContent = '[视频]';
-    payload.binaryContent = encodeJpg(thumbnail, quality: 35);
+    payload.binaryContent = encodeJpg(thumbnail, quality: 35) as Uint8List?;
     payload.content = json.encode({'duration': duration, 'd': duration});
     return payload;
   }

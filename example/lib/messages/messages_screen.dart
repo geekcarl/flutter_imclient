@@ -10,7 +10,7 @@ import 'package:flutter_imclient_example/messages/message_cell.dart';
 import 'package:flutter_imclient_example/messages/message_model.dart';
 
 class MessagesScreen extends StatefulWidget {
-  final Conversation conversation;
+  final Conversation? conversation;
 
   MessagesScreen(this.conversation);
 
@@ -19,9 +19,9 @@ class MessagesScreen extends StatefulWidget {
 }
 
 class _State extends State<MessagesScreen> {
-  List<MessageModel> models = List<MessageModel>();
+  List<MessageModel> models = <MessageModel>[];
   EventBus _eventBus = FlutterImclient.IMEventBus;
-  StreamSubscription<ReceiveMessagesEvent> _receiveMessageSubscription;
+  StreamSubscription<ReceiveMessagesEvent>? _receiveMessageSubscription;
 
   bool isLoading = false;
 
@@ -32,20 +32,20 @@ class _State extends State<MessagesScreen> {
 
   @override
   void initState() {
-    FlutterImclient.getMessages(widget.conversation, 0, 10).then((value) {
-      if(value != null && value.isNotEmpty) {
+    FlutterImclient.getMessages(widget.conversation!, 0, 10).then((value) {
+      if(value.isNotEmpty) {
         _appendMessage(value);
       }
     });
 
 
     _receiveMessageSubscription = _eventBus.on<ReceiveMessagesEvent>().listen((event) {
-      if(!event.hasMore) {
+      if(!event.hasMore!) {
         _appendMessage(event.messages, front: true);
       }
     });
 
-    FlutterImclient.clearConversationUnreadStatus(widget.conversation);
+    FlutterImclient.clearConversationUnreadStatus(widget.conversation!);
   }
 
   @override
@@ -54,14 +54,14 @@ class _State extends State<MessagesScreen> {
     _receiveMessageSubscription?.cancel();
   }
 
-  void _appendMessage(List<Message> messages, {bool front = false}) {
+  void _appendMessage(List<Message?> messages, {bool front = false}) {
     setState(() {
       bool haveNewMsg = false;
       messages.forEach((element) {
-        if(element.conversation != widget.conversation) {
+        if(element!.conversation != widget.conversation) {
           return;
         }
-        if(element.content.meta.flag.index & 0x2 == 0) {
+        if(element.content!.meta!.flag.index & 0x2 == 0) {
           return;
         }
         haveNewMsg = true;
@@ -72,7 +72,7 @@ class _State extends State<MessagesScreen> {
           models.add(model);
       });
       if(haveNewMsg)
-        FlutterImclient.clearConversationUnreadStatus(widget.conversation);
+        FlutterImclient.clearConversationUnreadStatus(widget.conversation!);
     });
   }
 
@@ -81,9 +81,9 @@ class _State extends State<MessagesScreen> {
       return;
 
     isLoading = true;
-    int fromIndex = 0;
+    int? fromIndex = 0;
     if(models.isNotEmpty) {
-      fromIndex = models.last.message.messageId;
+      fromIndex = models.last.message!.messageId;
     } else {
       isLoading = false;
       return;
@@ -96,8 +96,8 @@ class _State extends State<MessagesScreen> {
         isLoading = false;
         return;
       } else {
-        fromIndex = models.last.message.messageUid;
-        FlutterImclient.getRemoteMessages(widget.conversation, fromIndex, 20, (messages) {
+        fromIndex = models.last.message!.messageUid;
+        FlutterImclient.getRemoteMessages(widget.conversation!, fromIndex!, 20, (messages) {
           if(messages == null || messages.isEmpty) {
             noMoreRemoteHistoryMsg = true;
           }
@@ -109,7 +109,7 @@ class _State extends State<MessagesScreen> {
         });
       }
     } else {
-      FlutterImclient.getMessages(widget.conversation, fromIndex, 20).then((
+      FlutterImclient.getMessages(widget.conversation!, fromIndex!, 20).then((
           value) {
         _appendMessage(value);
         isLoading = false;
@@ -154,7 +154,7 @@ class _State extends State<MessagesScreen> {
                   IconButton(icon: Icon(Icons.record_voice_over), onPressed: null),
                   Expanded(child: TextField(controller: textEditingController,onSubmitted: (text){
                     TextMessageContent txt = TextMessageContent(text:text);
-                    FlutterImclient.sendMessage(widget.conversation, txt).then((value) {
+                    FlutterImclient.sendMessage(widget.conversation!, txt).then((value) {
                       _appendMessage([value], front: true);
                       textEditingController.clear();
                     });
