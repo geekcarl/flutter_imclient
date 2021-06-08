@@ -17,8 +17,8 @@ const fileContentMeta = MessageContentMeta(MESSAGE_CONTENT_TYPE_FILE,
 
 
 class FileMessageContent extends MediaMessageContent {
-  String? name;
-  int? size;
+  String name;
+  int size;
 
   @override
   MessageContentMeta get meta => fileContentMeta;
@@ -27,7 +27,7 @@ class FileMessageContent extends MediaMessageContent {
   void decode(MessagePayload payload) {
     super.decode(payload);
     name = payload.searchableContent;
-    size = int.parse(payload.content!);
+    size = int.parse(payload.content);
   }
 
   @override
@@ -40,7 +40,7 @@ class FileMessageContent extends MediaMessageContent {
 
   @override
   Future<String> digest(Message message) async {
-    if(name != null && name!.isNotEmpty) {
+    if(name != null && name.isNotEmpty) {
       return '[文件]:$name';
     }
     return '[文件]';

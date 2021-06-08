@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_imclient/message/message_content.dart';
 import 'package:flutter_imclient/model/message_payload.dart';
 import 'package:flutter_imclient/message/message.dart';
@@ -21,24 +19,24 @@ enum TypingType {
 }
 
 class TypingMessageContent extends MessageContent {
-  late TypingType type;
+  TypingType type;
 
   @override
   void decode(MessagePayload payload) {
     super.decode(payload);
-    type = TypingType.values[int.parse(payload.content!)];
+    type = TypingType.values[int.parse(payload.content)];
   }
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
+    MessagePayload payload = await super.encode();
     payload.content = type.index.toString();
     return payload;
   }
 
 
   @override
-  Future<String?> digest(Message message) async {
+  Future<String> digest(Message message) async {
     return null;
   }
 

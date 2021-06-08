@@ -1,9 +1,9 @@
 class UnreadCount {
   UnreadCount(
       {this.unread = 0, this.unreadMention = 0, this.unreadMentionAll = 0});
-  int? unread;
-  int? unreadMention;
-  int? unreadMentionAll;
+  int unread;
+  int unreadMention;
+  int unreadMentionAll;
 
   @override
   bool operator ==(Object other) =>

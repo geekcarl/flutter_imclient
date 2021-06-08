@@ -2,7 +2,7 @@ import 'package:flutter_imclient/message/message.dart';
 
 class MessageModel {
 
-  Message? message;
+  Message message;
   bool showTimeLabel;
   bool showNameLabel;
   bool mediaDownloading;
@@ -10,8 +10,8 @@ class MessageModel {
   bool voicePlaying;
   bool highlighted;
   bool lastReadMessage;
-  Map<String, int>? deliveryDict;
-  Map<String, int>? readDict;
+  Map<String, int> deliveryDict;
+  Map<String, int> readDict;
   double deliveryRate;
   double readRate;
   bool selecting;

@@ -17,13 +17,13 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen> {
   LoginScreenState({this.title = '登录'});
-  SharedPreferences? prefs;
+  SharedPreferences prefs;
 
-  String? currentUser;
+  String currentUser;
   String title;
   bool isSentCode = false;
   int waitResendCount = 0;
-  late Timer _timer;
+  Timer _timer;
 
   @override
   void initState() {
@@ -105,7 +105,7 @@ class LoginScreenState extends State<LoginScreen> {
                 if(phoneNum != null && code != null) {
                   AppServer.login(
                       phoneNum, code, (userId, token, isNewUser) {
-                    FlutterImclient.connect(Config.IM_Host, userId!, token!);
+                    FlutterImclient.connect(Config.IM_Host, userId, token);
                     
                     Navigator.push(
                       context,

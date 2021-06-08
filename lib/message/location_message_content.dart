@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter_imclient/message/message.dart';
 import 'package:flutter_imclient/message/message_content.dart';
@@ -18,17 +16,17 @@ const locationMessageContentMeta = MessageContentMeta(
     LocationMessageContentCreator);
 
 class LocationMessageContent extends MessageContent {
-  double? latitude;
-  double? longitude;
-  String? title;
-  late Image thumbnail;
+  double latitude;
+  double longitude;
+  String title;
+  Image thumbnail;
 
   @override
   Future<void> decode(MessagePayload payload) async {
     super.decode(payload);
     title = payload.searchableContent;
-    thumbnail = decodeJpg(payload.binaryContent!);
-    var map = json.decode(payload.content!);
+    thumbnail = decodeJpg(payload.binaryContent);
+    var map = json.decode(payload.content);
     latitude = map['lat'];
     longitude = map['long'];
   }
@@ -38,16 +36,16 @@ class LocationMessageContent extends MessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
+    MessagePayload payload = await super.encode();
     payload.searchableContent = title;
     payload.content = json.encode({'lat': latitude, 'long': longitude});
-    payload.binaryContent = encodeJpg(thumbnail, quality: 35) as Uint8List?;
+    payload.binaryContent = encodeJpg(thumbnail, quality: 35);
     return payload;
   }
 
   @override
   Future<String> digest(Message message) async {
-    if (title != null && title!.isNotEmpty) {
+    if (title != null && title.isNotEmpty) {
       return '[位置]:$title';
     }
 

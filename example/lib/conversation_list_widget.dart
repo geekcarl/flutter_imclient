@@ -16,7 +16,7 @@ import 'package:flutter_imclient_example/utilities.dart';
 
 // ignore: must_be_immutable
 class ConversationListWidget extends StatefulWidget {
-  Function(int unreadCount)? unreadCountCallback;
+  Function(int unreadCount) unreadCountCallback;
 
   ConversationListWidget({this.unreadCountCallback});
 
@@ -25,14 +25,14 @@ class ConversationListWidget extends StatefulWidget {
 }
 
 class _ConversationListWidgetState extends State<ConversationListWidget> {
-  List<ConversationInfo> conversationInfos = [];
-  StreamSubscription<ConnectionStatusChangedEvent>? _connectionStatusSubscription;
-  StreamSubscription<ReceiveMessagesEvent>? _receiveMessageSubscription;
-  StreamSubscription<UserSettingUpdatedEvent>? _userSettingUpdatedSubscription;
-  StreamSubscription<RecallMessageEvent>? _recallMessageSubscription;
-  StreamSubscription<DeleteMessageEvent>? _deleteMessageSubscription;
-  StreamSubscription<ClearConversationUnreadEvent>? _clearConveratonUnreadSubscription;
-  StreamSubscription<ClearConversationsUnreadEvent>? _clearConveratonsUnreadSubscription;
+  List<ConversationInfo> conversationInfos = new List();
+  StreamSubscription<ConnectionStatusChangedEvent> _connectionStatusSubscription;
+  StreamSubscription<ReceiveMessagesEvent> _receiveMessageSubscription;
+  StreamSubscription<UserSettingUpdatedEvent> _userSettingUpdatedSubscription;
+  StreamSubscription<RecallMessageEvent> _recallMessageSubscription;
+  StreamSubscription<DeleteMessageEvent> _deleteMessageSubscription;
+  StreamSubscription<ClearConversationUnreadEvent> _clearConveratonUnreadSubscription;
+  StreamSubscription<ClearConversationsUnreadEvent> _clearConveratonsUnreadSubscription;
   EventBus _eventBus = FlutterImclient.IMEventBus;
 
   @override
@@ -44,7 +44,7 @@ class _ConversationListWidgetState extends State<ConversationListWidget> {
     });
 
     _receiveMessageSubscription = _eventBus.on<ReceiveMessagesEvent>().listen((event) {
-      if(!event.hasMore!) {
+      if(!event.hasMore) {
         _loadConversation();
       }
     });
@@ -61,10 +61,10 @@ class _ConversationListWidgetState extends State<ConversationListWidget> {
       if(widget.unreadCountCallback != null) {
         int unreadCount = 0;
         value.forEach((element) {
-          if(!element.isSilent!)
-            unreadCount += element.unreadCount!.unread!;
+          if(!element.isSilent)
+            unreadCount += element.unreadCount.unread;
         });
-        widget.unreadCountCallback!(unreadCount);
+        widget.unreadCountCallback(unreadCount);
       }
       setState(() {
         conversationInfos = value;
@@ -115,23 +115,23 @@ class ConversationListItem extends StatefulWidget {
 
 class _ConversationListItemState extends State<ConversationListItem> {
   ConversationInfo conversationInfo;
-  UserInfo? userInfo;
-  GroupInfo? groupInfo;
-  ChannelInfo? channelInfo;
+  UserInfo userInfo;
+  GroupInfo groupInfo;
+  ChannelInfo channelInfo;
 
-  UserInfo? fromUser;
+  UserInfo fromUser;
 
-  String? digest = "";
+  String digest = "";
 
   var defaultAvatar = 'assets/images/user_avatar_default.png';
 
   EventBus _eventBus = FlutterImclient.IMEventBus;
 
   _ConversationListItemState(this.conversationInfo) {
-   if(conversationInfo.conversation!.conversationType == ConversationType.Single) {
-     userInfo = Cache.getUserInfo(conversationInfo.conversation!.target);
-     FlutterImclient.getUserInfo(conversationInfo.conversation!.target).then((value) {
-       if(value != null && value != userInfo && value.userId == conversationInfo.conversation!.target) {
+   if(conversationInfo.conversation.conversationType == ConversationType.Single) {
+     userInfo = Cache.getUserInfo(conversationInfo.conversation.target);
+     FlutterImclient.getUserInfo(conversationInfo.conversation.target).then((value) {
+       if(value != null && value != userInfo && value.userId == conversationInfo.conversation.target) {
          Cache.putUserInfo(value);
          setState(() {
            userInfo = value;
@@ -139,20 +139,20 @@ class _ConversationListItemState extends State<ConversationListItem> {
        }
      });
 
-   } else if(conversationInfo.conversation!.conversationType == ConversationType.Group) {
-     groupInfo = Cache.getGroupInfo(conversationInfo.conversation!.target);
-     FlutterImclient.getGroupInfo(conversationInfo.conversation!.target!).then((value) {
-       if(value != null && value != groupInfo && value.target == conversationInfo.conversation!.target) {
+   } else if(conversationInfo.conversation.conversationType == ConversationType.Group) {
+     groupInfo = Cache.getGroupInfo(conversationInfo.conversation.target);
+     FlutterImclient.getGroupInfo(conversationInfo.conversation.target).then((value) {
+       if(value != null && value != groupInfo && value.target == conversationInfo.conversation.target) {
          Cache.putGroupInfo(value);
          setState(() {
            groupInfo = value;
          });
        }
      });
-   } else if(conversationInfo.conversation!.conversationType == ConversationType.Channel) {
-     FlutterImclient.getChannelInfo(conversationInfo.conversation!.target!).then((value) {
-       channelInfo = Cache.getChannelInfo(conversationInfo.conversation!.target);
-       if(value != null && value != channelInfo && value.channelId == conversationInfo.conversation!.target) {
+   } else if(conversationInfo.conversation.conversationType == ConversationType.Channel) {
+     FlutterImclient.getChannelInfo(conversationInfo.conversation.target).then((value) {
+       channelInfo = Cache.getChannelInfo(conversationInfo.conversation.target);
+       if(value != null && value != channelInfo && value.channelId == conversationInfo.conversation.target) {
          Cache.putChannelInfo(value);
          setState(() {
            channelInfo = channelInfo;
@@ -161,10 +161,10 @@ class _ConversationListItemState extends State<ConversationListItem> {
      });
    }
    
-   if(conversationInfo.lastMessage != null && conversationInfo.lastMessage!.content != null) {
+   if(conversationInfo.lastMessage != null && conversationInfo.lastMessage.content != null) {
      digest = Cache.getConversationDigest(conversationInfo.conversation);
      print('digest is $digest');
-     conversationInfo.lastMessage!.content!.digest(conversationInfo.lastMessage!).then((value) {
+     conversationInfo.lastMessage.content.digest(conversationInfo.lastMessage).then((value) {
        if(digest != value) {
          Cache.putConversationDigest(conversationInfo.conversation, value);
          setState(() {
@@ -177,29 +177,29 @@ class _ConversationListItemState extends State<ConversationListItem> {
 
   @override
   Widget build(BuildContext context) {
-    String? portrait;
-    late String localPortrait;
-    String? convTitle;
-    if(conversationInfo.conversation!.conversationType == ConversationType.Single) {
-      if(userInfo != null && userInfo!.portrait != null && userInfo!.portrait!.isNotEmpty) {
-        portrait = userInfo!.portrait;
-        convTitle = userInfo!.displayName;
+    String portrait;
+    String localPortrait;
+    String convTitle;
+    if(conversationInfo.conversation.conversationType == ConversationType.Single) {
+      if(userInfo != null && userInfo.portrait != null && userInfo.portrait.isNotEmpty) {
+        portrait = userInfo.portrait;
+        convTitle = userInfo.displayName;
       } else {
         convTitle = '私聊';
       }
       localPortrait = 'assets/images/user_avatar_default.png';
-    } else if(conversationInfo.conversation!.conversationType == ConversationType.Group) {
-      if(groupInfo != null && groupInfo!.portrait != null && groupInfo!.portrait!.isNotEmpty) {
-        portrait = groupInfo!.portrait;
-        convTitle = groupInfo!.name;
+    } else if(conversationInfo.conversation.conversationType == ConversationType.Group) {
+      if(groupInfo != null && groupInfo.portrait != null && groupInfo.portrait.isNotEmpty) {
+        portrait = groupInfo.portrait;
+        convTitle = groupInfo.name;
       } else {
         convTitle = '群聊';
       }
       localPortrait = 'assets/images/group_avatar_default.png';
-    } else if(conversationInfo.conversation!.conversationType == ConversationType.Channel) {
-      if(channelInfo != null && channelInfo!.portrait != null && channelInfo!.portrait!.isNotEmpty) {
-        portrait = channelInfo!.portrait;
-        convTitle = channelInfo!.name;
+    } else if(conversationInfo.conversation.conversationType == ConversationType.Channel) {
+      if(channelInfo != null && channelInfo.portrait != null && channelInfo.portrait.isNotEmpty) {
+        portrait = channelInfo.portrait;
+        convTitle = channelInfo.name;
       } else {
         convTitle = '频道';
       }
@@ -210,7 +210,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
 
     return new GestureDetector(
       child: new Container(
-        color: conversationInfo.isTop! ? CupertinoColors.secondarySystemBackground :  CupertinoColors.systemBackground,
+        color: conversationInfo.isTop ? CupertinoColors.secondarySystemBackground :  CupertinoColors.systemBackground,
         child: new Column(
           children: <Widget>[
             new Container(
@@ -219,8 +219,8 @@ class _ConversationListItemState extends State<ConversationListItem> {
               child: new Row(
                 children: <Widget>[
                   Badge(
-                    showBadge: conversationInfo.unreadCount!.unread! > 0,
-                    badgeContent: Text(conversationInfo.isSilent! ? '' : '${conversationInfo.unreadCount!.unread}'),
+                    showBadge: conversationInfo.unreadCount.unread > 0,
+                    badgeContent: Text(conversationInfo.isSilent ? '' : '${conversationInfo.unreadCount.unread}'),
                     child: portrait == null ? new Image.asset(localPortrait, width: 44.0, height: 44.0) : Image.network(portrait, width: 44.0, height: 44.0),
                   ),
                   new Expanded(
@@ -252,7 +252,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
                     new Padding(
                       padding: new EdgeInsets.fromLTRB(0.0, 15.0, 15.0, 0.0),
                       child: new Text(
-                        '${Utilities.formatTime(conversationInfo.timestamp!)}',
+                        '${Utilities.formatTime(conversationInfo.timestamp)}',
                         style: TextStyle(
                           fontSize: 10.0,
                           color: const Color(0xffaaaaaa),
@@ -261,7 +261,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
                     ),
                     new Padding(
                       padding: new EdgeInsets.fromLTRB(0.0, 5.0, 15.0, 0.0),
-                      child: conversationInfo.isSilent! ? new Image.asset('assets/images/conversation_mute.png', width: 10, height: 10,) : null,
+                      child: conversationInfo.isSilent ? new Image.asset('assets/images/conversation_mute.png', width: 10, height: 10,) : null,
                     ),
                   ],),
                 ],
@@ -285,7 +285,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
   /// 跳转聊天界面
   ///
   ///
-  _toChatPage(Conversation? conversation) {
+  _toChatPage(Conversation conversation) {
     Navigator.push(
       context,
       new MaterialPageRoute(builder: (context) => new MessagesScreen(conversation)),

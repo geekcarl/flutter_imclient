@@ -1,4 +1,4 @@
 class ChatroomMemberInfo {
-  int? memberCount;
-  List<String>? members;
+  int memberCount;
+  List<String> members;
 }

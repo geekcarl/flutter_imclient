@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -20,15 +19,14 @@ const transferGroupOwnerNotificationContentMeta = MessageContentMeta(
     TransferGroupOwnerNotificationContentCreator);
 
 class TransferGroupOwnerNotificationContent extends NotificationMessageContent {
-  String? groupId;
-  String? operateUser;
-  String? owner;
+  String groupId;
+  String operateUser;
+  String owner;
 
   @override
   void decode(MessagePayload payload) {
     super.decode(payload);
-    Map<dynamic, dynamic> map =
-        json.decode(utf8.decode(payload.binaryContent!));
+    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent));
     operateUser = map['o'];
     groupId = map['g'];
     owner = map['m'];
@@ -41,7 +39,7 @@ class TransferGroupOwnerNotificationContent extends NotificationMessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
+    MessagePayload payload = await super.encode();
     Map<String, dynamic> map = new Map();
     map['o'] = operateUser;
     map['g'] = groupId;
@@ -56,16 +54,16 @@ class TransferGroupOwnerNotificationContent extends NotificationMessageContent {
     if (operateUser == await FlutterImclient.currentUserId) {
       formatMsg = '你';
     } else {
-      UserInfo? userInfo =
+      UserInfo userInfo =
           await FlutterImclient.getUserInfo(operateUser, groupId: groupId);
       if (userInfo != null) {
-        if (userInfo.friendAlias != null && userInfo.friendAlias!.isNotEmpty) {
+        if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
           formatMsg = '${userInfo.friendAlias}';
         } else if (userInfo.groupAlias != null &&
-            userInfo.groupAlias!.isNotEmpty) {
+            userInfo.groupAlias.isNotEmpty) {
           formatMsg = '${userInfo.groupAlias}';
         } else if (userInfo.displayName != null &&
-            userInfo.displayName!.isNotEmpty) {
+            userInfo.displayName.isNotEmpty) {
           formatMsg = '${userInfo.displayName}';
         } else {
           formatMsg = '$operateUser';
@@ -80,16 +78,16 @@ class TransferGroupOwnerNotificationContent extends NotificationMessageContent {
     if (owner == await FlutterImclient.currentUserId) {
       formatMsg = '$formatMsg 你';
     } else {
-      UserInfo? userInfo =
+      UserInfo userInfo =
           await FlutterImclient.getUserInfo(owner, groupId: groupId);
       if (userInfo != null) {
-        if (userInfo.friendAlias != null && userInfo.friendAlias!.isNotEmpty) {
+        if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
           formatMsg = '$formatMsg ${userInfo.friendAlias}';
         } else if (userInfo.groupAlias != null &&
-            userInfo.groupAlias!.isNotEmpty) {
+            userInfo.groupAlias.isNotEmpty) {
           formatMsg = '$formatMsg ${userInfo.groupAlias}';
         } else if (userInfo.displayName != null &&
-            userInfo.displayName!.isNotEmpty) {
+            userInfo.displayName.isNotEmpty) {
           formatMsg = '$formatMsg ${userInfo.displayName}';
         } else {
           formatMsg = '$formatMsg $operateUser';

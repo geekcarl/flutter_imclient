@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -20,15 +19,14 @@ const kickoffGroupMemberNotificationContentMeta = MessageContentMeta(
     KickoffGroupMemberNotificationContentCreator);
 
 class KickoffGroupMemberNotificationContent extends NotificationMessageContent {
-  String? groupId;
-  String? operateUser;
-  List<String>? kickedMembers;
+  String groupId;
+  String operateUser;
+  List<String> kickedMembers;
 
   @override
   void decode(MessagePayload payload) {
     super.decode(payload);
-    Map<dynamic, dynamic> map =
-        json.decode(utf8.decode(payload.binaryContent!));
+    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent));
     operateUser = map['o'];
     groupId = map['g'];
     kickedMembers = FlutterImclient.convertDynamicList(map['ms']);
@@ -41,7 +39,7 @@ class KickoffGroupMemberNotificationContent extends NotificationMessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
+    MessagePayload payload = await super.encode();
     Map<String, dynamic> map = new Map();
     map['o'] = operateUser;
     map['g'] = groupId;
@@ -56,16 +54,16 @@ class KickoffGroupMemberNotificationContent extends NotificationMessageContent {
     if (operateUser == await FlutterImclient.currentUserId) {
       formatMsg = '你';
     } else {
-      UserInfo? userInfo =
+      UserInfo userInfo =
           await FlutterImclient.getUserInfo(operateUser, groupId: groupId);
       if (userInfo != null) {
-        if (userInfo.friendAlias != null && userInfo.friendAlias!.isNotEmpty) {
+        if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
           formatMsg = '${userInfo.friendAlias}';
         } else if (userInfo.groupAlias != null &&
-            userInfo.groupAlias!.isNotEmpty) {
+            userInfo.groupAlias.isNotEmpty) {
           formatMsg = '${userInfo.groupAlias}';
         } else if (userInfo.displayName != null &&
-            userInfo.displayName!.isNotEmpty) {
+            userInfo.displayName.isNotEmpty) {
           formatMsg = '${userInfo.displayName}';
         } else {
           formatMsg = '$operateUser';
@@ -77,22 +75,21 @@ class KickoffGroupMemberNotificationContent extends NotificationMessageContent {
 
     formatMsg = '$formatMsg 把';
 
-    for (int i = 0; i < kickedMembers!.length; ++i) {
-      String memberId = kickedMembers![i];
+    for (int i = 0; i < kickedMembers.length; ++i) {
+      String memberId = kickedMembers[i];
       if (memberId == await FlutterImclient.currentUserId) {
         formatMsg = '$formatMsg 你';
       } else {
-        UserInfo? userInfo =
+        UserInfo userInfo =
             await FlutterImclient.getUserInfo(memberId, groupId: groupId);
         if (userInfo != null) {
-          if (userInfo.friendAlias != null &&
-              userInfo.friendAlias!.isNotEmpty) {
+          if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
             formatMsg = '$formatMsg ${userInfo.friendAlias}';
           } else if (userInfo.groupAlias != null &&
-              userInfo.groupAlias!.isNotEmpty) {
+              userInfo.groupAlias.isNotEmpty) {
             formatMsg = '$formatMsg ${userInfo.groupAlias}';
           } else if (userInfo.displayName != null &&
-              userInfo.displayName!.isNotEmpty) {
+              userInfo.displayName.isNotEmpty) {
             formatMsg = '$formatMsg ${userInfo.displayName}';
           } else {
             formatMsg = '$formatMsg $operateUser';

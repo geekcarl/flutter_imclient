@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -20,18 +19,17 @@ const groupSetManagerNotificationContentMeta = MessageContentMeta(
     GroupSetManagerNotificationContentCreator);
 
 class GroupSetManagerNotificationContent extends NotificationMessageContent {
-  String? groupId;
-  String? operatorId;
+  String groupId;
+  String operatorId;
 
   /// 0 取消，1 设置。
-  String? type;
-  List<String>? memberIds;
+  String type;
+  List<String> memberIds;
 
   @override
   void decode(MessagePayload payload) {
     super.decode(payload);
-    Map<dynamic, dynamic> map =
-        json.decode(utf8.decode(payload.binaryContent!));
+    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent));
     operatorId = map['o'];
     groupId = map['g'];
     type = map['n'];
@@ -45,7 +43,7 @@ class GroupSetManagerNotificationContent extends NotificationMessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
+    MessagePayload payload = await super.encode();
     Map<String, dynamic> map = new Map();
     map['o'] = operatorId;
     map['g'] = groupId;
@@ -61,16 +59,16 @@ class GroupSetManagerNotificationContent extends NotificationMessageContent {
     if (operatorId == await FlutterImclient.currentUserId) {
       formatMsg = '你';
     } else {
-      UserInfo? userInfo =
+      UserInfo userInfo =
           await FlutterImclient.getUserInfo(operatorId, groupId: groupId);
       if (userInfo != null) {
-        if (userInfo.friendAlias != null && userInfo.friendAlias!.isNotEmpty) {
+        if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
           formatMsg = '${userInfo.friendAlias}';
         } else if (userInfo.groupAlias != null &&
-            userInfo.groupAlias!.isNotEmpty) {
+            userInfo.groupAlias.isNotEmpty) {
           formatMsg = '${userInfo.groupAlias}';
         } else if (userInfo.displayName != null &&
-            userInfo.displayName!.isNotEmpty) {
+            userInfo.displayName.isNotEmpty) {
           formatMsg = '${userInfo.displayName}';
         } else {
           formatMsg = '$operatorId';
@@ -86,22 +84,21 @@ class GroupSetManagerNotificationContent extends NotificationMessageContent {
       formatMsg = '$formatMsg 取消 ';
     }
 
-    for (int i = 0; i < memberIds!.length; ++i) {
-      String memberId = memberIds![i];
+    for (int i = 0; i < memberIds.length; ++i) {
+      String memberId = memberIds[i];
       if (memberId == await FlutterImclient.currentUserId) {
         formatMsg = '$formatMsg 你';
       } else {
-        UserInfo? userInfo =
+        UserInfo userInfo =
             await FlutterImclient.getUserInfo(memberId, groupId: groupId);
         if (userInfo != null) {
-          if (userInfo.friendAlias != null &&
-              userInfo.friendAlias!.isNotEmpty) {
+          if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
             formatMsg = '$formatMsg ${userInfo.friendAlias}';
           } else if (userInfo.groupAlias != null &&
-              userInfo.groupAlias!.isNotEmpty) {
+              userInfo.groupAlias.isNotEmpty) {
             formatMsg = '$formatMsg ${userInfo.groupAlias}';
           } else if (userInfo.displayName != null &&
-              userInfo.displayName!.isNotEmpty) {
+              userInfo.displayName.isNotEmpty) {
             formatMsg = '$formatMsg ${userInfo.displayName}';
           } else {
             formatMsg = '$formatMsg $operatorId';

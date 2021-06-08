@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _initIMClient() async {
-    FlutterImclient.init((int? status) {
+    FlutterImclient.init((int status) {
       print(status);
       if (status == kConnectionStatusSecretKeyMismatch ||
           status == kConnectionStatusTokenIncorrect ||
@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
           status == kConnectionStatusLogout) {
         if(status != kConnectionStatusLogout) {
           FlutterImclient.isLogined.then((value) {
-            if(value!) {
+            if(value) {
               FlutterImclient.disconnect();
             }
           });
@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> {
           isLogined = false;
         });
       }
-    }, (List<Message?> messages, bool? hasMore) {
+    }, (List<Message> messages, bool hasMore) {
       print(messages);
     }, (messageUid) {
       print('recall message ${messageUid}');
@@ -66,17 +66,17 @@ class _MyAppState extends State<MyApp> {
       print('on message deliveried $deliveryMap');
     }, messageReadedCallback: (List<ReadReport> readReports) {
       print("on message readed $readReports");
-    }, groupInfoUpdatedCallback: (List<GroupInfo?> groupInfos) {
+    }, groupInfoUpdatedCallback: (List<GroupInfo> groupInfos) {
       print("on groupInfo updated $groupInfos");
-    }, groupMemberUpdatedCallback: (String? groupId, List<GroupMember> members) {
+    }, groupMemberUpdatedCallback: (String groupId, List<GroupMember> members) {
       print("on group ${groupId} member updated $members");
-    }, userInfoUpdatedCallback: (List<UserInfo?> userInfos) {
+    }, userInfoUpdatedCallback: (List<UserInfo> userInfos) {
       print("on groupInfo updated $userInfos");
     }, channelInfoUpdatedCallback: (List<ChannelInfo> channelInfos) {
       print("on groupInfo updated $channelInfos");
     }, userSettingsUpdatedCallback: () {
       print("on groupInfo updated");
-    }, friendListUpdatedCallback: (List<String?> newFriendIds) {
+    }, friendListUpdatedCallback: (List<String> newFriendIds) {
       print("on friend list updated $newFriendIds");
     }, friendRequestListUpdatedCallback: (List<String> newFriendRequests) {
       print("on friend request updated $newFriendRequests");
@@ -85,7 +85,7 @@ class _MyAppState extends State<MyApp> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (prefs.getString("userId") != null && prefs.getString("token") != null) {
       FlutterImclient.connect(
-          Config.IM_Host, prefs.getString("userId")!, prefs.getString("token")!);
+          Config.IM_Host, prefs.getString("userId"), prefs.getString("token"));
       setState(() {
         isLogined = true;
       });

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_imclient/message/message_content.dart';
 import 'package:flutter_imclient/model/message_payload.dart';
 import 'package:flutter_imclient/message/message.dart';
@@ -13,8 +11,8 @@ const ptextContentMeta = MessageContentMeta(MESSAGE_CONTENT_TYPE_P_TEXT,
     MessageFlag.PERSIST, PTextMessageContentCreator);
 
 class PTextMessageContent extends MessageContent {
-  PTextMessageContent({String? text}) : this.text = text;
-  String? text;
+  PTextMessageContent({String text}) : this.text = text;
+  String text;
 
   @override
   void decode(MessagePayload payload) {
@@ -24,14 +22,14 @@ class PTextMessageContent extends MessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
+    MessagePayload payload = await super.encode();
     payload.searchableContent = text;
     return payload;
   }
 
 
   @override
-  Future<String?> digest(Message message) async {
+  Future<String> digest(Message message) async {
     return text;
   }
 

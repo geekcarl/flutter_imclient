@@ -137,9 +137,9 @@ class MessageContentMeta {
 
 class MessageContent {
   ///0 普通消息；1 提醒mentionedTargets用户；2 提醒所有用户。
-  int? mentionedType;
-  List<String>? mentionedTargets;
-  String? extra;
+  int mentionedType;
+  List<String> mentionedTargets;
+  String extra;
 
   void decode(MessagePayload payload) {
     mentionedType = payload.mentionedType;
@@ -147,22 +147,22 @@ class MessageContent {
     extra = payload.extra;
   }
 
-  Future<MessagePayload?> encode() async {
+  Future<MessagePayload> encode() async {
     MessagePayload payload = new MessagePayload();
     payload.mentionedType = mentionedType;
     payload.mentionedTargets = mentionedTargets;
     payload.extra = extra;
     if (meta != null) {
-      payload.contentType = meta!.type;
+      payload.contentType = meta.type;
     }
     payload.mentionedType = 0;
     payload.mediaType = MediaType.Media_Type_GENERAL;
     return payload;
   }
 
-   Future<String?> digest(Message message) async {
+   Future<String> digest(Message message) async {
     return '未知消息';
   }
 
-  MessageContentMeta? get meta => null;
+  MessageContentMeta get meta => null;
 }

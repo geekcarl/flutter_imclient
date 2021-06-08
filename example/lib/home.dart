@@ -24,7 +24,7 @@ class HomeTabBarState extends State<HomeTabBar> {
 
   var tabImages;
   var _body;
-  late var pages;
+  var pages;
 
   int unreadCount = 0;
 
@@ -69,7 +69,7 @@ class HomeTabBarState extends State<HomeTabBar> {
     return tabTextStyleNormal;
   }
 
-  Image? getTabIcon(int curIndex) {//设置tabbar选中和未选中的状态图标
+  Image getTabIcon(int curIndex) {//设置tabbar选中和未选中的状态图标
     if (curIndex == _tabIndex) {
       return tabImages[curIndex][1];
     }
@@ -103,13 +103,13 @@ class HomeTabBarState extends State<HomeTabBar> {
                 ),
                 label: getTabTitle(0)),
             BottomNavigationBarItem(
-                icon: getTabIcon(1)!,
+                icon: getTabIcon(1),
                 label: getTabTitle(1)),
             BottomNavigationBarItem(
-                icon: getTabIcon(2)!,
+                icon: getTabIcon(2),
                 label: getTabTitle(2)),
             BottomNavigationBarItem(
-                icon: getTabIcon(3)!,
+                icon: getTabIcon(3),
                 label: getTabTitle(3)),
           ],
           currentIndex: _tabIndex,

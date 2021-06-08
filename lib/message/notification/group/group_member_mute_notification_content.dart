@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -20,18 +19,16 @@ const groupMemberMuteNotificationContentMeta = MessageContentMeta(
     GroupMemberMuteNotificationContentCreator);
 
 class GroupMemberMuteNotificationContent extends NotificationMessageContent {
-  String? groupId;
-  String? creator;
-
+  String groupId;
+  String creator;
   //0 设置禁言名单，1 取消名单。
-  String? type;
-  List<String>? targetIds;
+  String type;
+  List<String> targetIds;
 
   @override
   void decode(MessagePayload payload) {
     super.decode(payload);
-    Map<dynamic, dynamic> map =
-        json.decode(utf8.decode(payload.binaryContent!));
+    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent));
     creator = map['o'];
     groupId = map['g'];
     type = map['n'];
@@ -45,7 +42,7 @@ class GroupMemberMuteNotificationContent extends NotificationMessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
+    MessagePayload payload = await super.encode();
     Map<String, dynamic> map = new Map();
     map['o'] = creator;
     map['g'] = groupId;
@@ -61,16 +58,16 @@ class GroupMemberMuteNotificationContent extends NotificationMessageContent {
     if (creator == await FlutterImclient.currentUserId) {
       formatMsg = '你';
     } else {
-      UserInfo? userInfo =
+      UserInfo userInfo =
           await FlutterImclient.getUserInfo(creator, groupId: groupId);
       if (userInfo != null) {
-        if (userInfo.friendAlias != null && userInfo.friendAlias!.isNotEmpty) {
+        if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
           formatMsg = '${userInfo.friendAlias}';
         } else if (userInfo.groupAlias != null &&
-            userInfo.groupAlias!.isNotEmpty) {
+            userInfo.groupAlias.isNotEmpty) {
           formatMsg = '${userInfo.groupAlias}';
         } else if (userInfo.displayName != null &&
-            userInfo.displayName!.isNotEmpty) {
+            userInfo.displayName.isNotEmpty) {
           formatMsg = '${userInfo.displayName}';
         } else {
           formatMsg = '$creator';
@@ -86,22 +83,21 @@ class GroupMemberMuteNotificationContent extends NotificationMessageContent {
       formatMsg = '$formatMsg 取消禁言了 ';
     }
 
-    for (int i = 0; i < targetIds!.length; ++i) {
-      String memberId = targetIds![i];
+    for (int i = 0; i < targetIds.length; ++i) {
+      String memberId = targetIds[i];
       if (memberId == await FlutterImclient.currentUserId) {
         formatMsg = '$formatMsg 你';
       } else {
-        UserInfo? userInfo =
+        UserInfo userInfo =
             await FlutterImclient.getUserInfo(memberId, groupId: groupId);
         if (userInfo != null) {
-          if (userInfo.friendAlias != null &&
-              userInfo.friendAlias!.isNotEmpty) {
+          if (userInfo.friendAlias != null && userInfo.friendAlias.isNotEmpty) {
             formatMsg = '$formatMsg ${userInfo.friendAlias}';
           } else if (userInfo.groupAlias != null &&
-              userInfo.groupAlias!.isNotEmpty) {
+              userInfo.groupAlias.isNotEmpty) {
             formatMsg = '$formatMsg ${userInfo.groupAlias}';
           } else if (userInfo.displayName != null &&
-              userInfo.displayName!.isNotEmpty) {
+              userInfo.displayName.isNotEmpty) {
             formatMsg = '$formatMsg ${userInfo.displayName}';
           } else {
             formatMsg = '$formatMsg $creator';

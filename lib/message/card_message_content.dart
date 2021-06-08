@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter_imclient/message/media_message_content.dart';
 import 'package:flutter_imclient/message/message.dart';
@@ -22,11 +21,11 @@ enum CardType {
 }
 
 class CardMessageContent extends MediaMessageContent {
-  late CardType type;
-  String? targetId;
-  String? name;
-  String? displayName;
-  String? portrait;
+  CardType type;
+  String targetId;
+  String name;
+  String displayName;
+  String portrait;
 
   @override
   MessageContentMeta get meta => cardContentMeta;
@@ -35,7 +34,7 @@ class CardMessageContent extends MediaMessageContent {
   void decode(MessagePayload payload) {
     super.decode(payload);
     targetId = payload.content;
-    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent!));
+    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent));
     name = map['n'];
     displayName = map['d'];
     portrait = map['p'];
@@ -52,13 +51,13 @@ class CardMessageContent extends MediaMessageContent {
       'd': displayName,
       'p': portrait,
       't': type.index,
-    })) as Uint8List?;
+    }));
     return payload;
   }
 
   @override
   Future<String> digest(Message message) async {
-    if (displayName != null && displayName!.isNotEmpty) {
+    if (displayName != null && displayName.isNotEmpty) {
       return '[名片]:$displayName';
     }
     return '[名片]';

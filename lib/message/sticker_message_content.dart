@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter_imclient/message/media_message_content.dart';
 import 'package:flutter_imclient/message/message.dart';
@@ -15,8 +14,8 @@ const stickerContentMeta = MessageContentMeta(MESSAGE_CONTENT_TYPE_STICKER,
     MessageFlag.PERSIST_AND_COUNT, StickerMessageContentCreator);
 
 class StickerMessageContent extends MediaMessageContent {
-  int? width;
-  int? height;
+  int width;
+  int height;
 
   @override
   MessageContentMeta get meta => stickerContentMeta;
@@ -24,7 +23,7 @@ class StickerMessageContent extends MediaMessageContent {
   @override
   void decode(MessagePayload payload) {
     super.decode(payload);
-    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent!));
+    Map<dynamic, dynamic> map = json.decode(utf8.decode(payload.binaryContent));
     width = map['x'];
     height = map['y'];
   }
@@ -33,7 +32,7 @@ class StickerMessageContent extends MediaMessageContent {
   Future<MessagePayload> encode() async {
     MessagePayload payload = await super.encode();
     payload.searchableContent = '[动态表情]';
-    payload.binaryContent = utf8.encode(json.encode({'x': width, 'y': height})) as Uint8List?;
+    payload.binaryContent = utf8.encode(json.encode({'x': width, 'y': height}));
     return payload;
   }
 
