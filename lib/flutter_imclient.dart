@@ -1405,8 +1405,7 @@ class FlutterImclient {
       args["withUser"] = withUser;
     }
 
-    List<dynamic> datas = await (_channel.invokeMethod("getMessages", args)
-        as FutureOr<List<dynamic>>);
+    List<dynamic> datas = await _channel.invokeMethod("getMessages", args);
     return _convertProtoMessages(datas);
   }
 
@@ -1787,8 +1786,8 @@ class FlutterImclient {
     if (successCallback != null)
       _operationSuccessCallbackMap[requestId] = successCallback;
     if (errorCallback != null) _errorCallbackMap[requestId] = errorCallback;
-    await _channel.invokeMethod(
-        "getUserInfoAsync", {"requestId": requestId, "userId": userId});
+    await _channel.invokeMethod("getUserInfoAsync",
+        {"requestId": requestId, "userId": userId, "refresh": refresh});
   }
 
   ///是否是好友

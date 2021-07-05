@@ -1,6 +1,7 @@
 class UserInfo {
   UserInfo(
       {this.gender = 0, this.updateDt = 0, this.type = 0, this.deleted = 0});
+
   //用户ID
   String? userId;
 
@@ -48,4 +49,9 @@ class UserInfo {
 
   //是否被删除用户
   int? deleted;
+
+  @override
+  String toString() {
+    return 'UserInfo{userId: $userId, name: $name, displayName: $displayName, gender: $gender, portrait: $portrait, mobile: $mobile, email: $email, address: $address, company: $company, social: $social, extra: $extra, friendAlias: $friendAlias, groupAlias: $groupAlias, updateDt: $updateDt, type: $type, deleted: $deleted}';
+  }
 }

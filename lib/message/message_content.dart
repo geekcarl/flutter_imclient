@@ -147,7 +147,7 @@ class MessageContent {
     extra = payload.extra;
   }
 
-  Future<MessagePayload?> encode() async {
+  Future<MessagePayload> encode() async {
     MessagePayload payload = new MessagePayload();
     payload.mentionedType = mentionedType;
     payload.mentionedTargets = mentionedTargets;

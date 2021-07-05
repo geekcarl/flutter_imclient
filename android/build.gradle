@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.android.tools.build:gradle:4.2.1'
     }
 }
 
@@ -33,7 +33,7 @@ android {
     dependencies {
         api project(':mars-core-release')
         implementation project(path: ':push', configuration:'default')
-        def lifecycle_version = '2.0.0-beta01'
+        def lifecycle_version = '2.2.0'
         implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     }
 }

@@ -39,7 +39,7 @@ class DismissGroupNotificationContent extends NotificationMessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
+    MessagePayload payload = await super.encode();
     Map<String, dynamic> map = new Map();
     map['o'] = operateUser;
     map['g'] = groupId;

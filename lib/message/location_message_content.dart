@@ -38,7 +38,7 @@ class LocationMessageContent extends MessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
+    MessagePayload payload = await super.encode();
     payload.searchableContent = title;
     payload.content = json.encode({'lat': latitude, 'long': longitude});
     payload.binaryContent = encodeJpg(thumbnail, quality: 35) as Uint8List?;

@@ -56,7 +56,7 @@ class RecallNotificationContent extends NotificationMessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
+    MessagePayload payload = await super.encode();
     payload.content = operatorId;
     payload.binaryContent = utf8.encode(messageUid.toString()) as Uint8List?;
     return payload;

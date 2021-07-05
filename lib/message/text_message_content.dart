@@ -24,7 +24,7 @@ class TextMessageContent extends MessageContent {
 
   @override
   Future<MessagePayload> encode() async {
-    MessagePayload payload = await (super.encode() as FutureOr<MessagePayload>);
+    MessagePayload payload = await super.encode();
     payload.searchableContent = text;
     return payload;
   }
